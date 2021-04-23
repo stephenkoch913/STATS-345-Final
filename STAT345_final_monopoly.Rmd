@@ -21,9 +21,5 @@ Expected Submission: You will generate a well-written R Markdown report that add
 This Is a test to see if my document is working - Adam
 test typing
 
-
-test - Douglas
-
-
-
+Test - Stephen
 
