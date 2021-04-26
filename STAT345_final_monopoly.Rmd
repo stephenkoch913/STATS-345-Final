@@ -8,9 +8,54 @@ Expected Submission: You will generate a well-written R Markdown report that add
 
 **General advice:** Get started early. If you wait to the last minute, it will not go well. For this project, you may find yourself spending a reasonable amount of time _searching_ for help.
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+
+```
+
 1. _Rules!_ Monopoly has several rules related to movement around the game board. Movement is affected by standard dice rolls, special conditions for some dice rolls, and game cards. Find and summarize these rules. 
 
 2. _Let's Get Moving_ Build a system that allows for up to 4 players to move around the game board. As a first attempt, focus on standard dice rolls, ignoring additional rules related to rolling doubles, jail, or special cards. Which properties are landed on most frequently? Create a visualization for this!
+
+```{r}
+ 
+
+dice <- function() {
+  faces <- sample(1:6, 2, replace = TRUE)
+  doubles = FALSE
+  
+  if(faces[1]== faces[2]){
+    doubles = TRUE
+  }
+  
+  movement = sum(faces)
+  return(list(faces=faces, doubles=doubles, movement = movement))
+}
+
+cur_space <- 0
+num_simulations <- 10000
+spaces_landed_on <- rep(0, num_simulations)
+
+for(i in 1:num_simulations) {
+  move <- dice()$movement
+  if(cur_space+move > 40){
+    cur_space = cur_space+ move -40
+  }
+  else {
+    cur_space = cur_space+move
+    
+  }
+  spaces_landed_on[i]= cur_space
+}
+
+df =  tibble(spaces_landed_on) 
+
+ggplot(data = df, aes(x = spaces_landed_on)) + geom_histogram(binwidth = 1)
+```
+
+
 
 3. _Double Down_ Improve your system to incorporate going to jail, including the doubles-rolling condition. Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for jail)? Again, visualize this!
 
