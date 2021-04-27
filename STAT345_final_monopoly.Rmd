@@ -63,7 +63,7 @@ for(i in 1:1000){
   }
 }
 
-communitydeck <-  data.frame(index = 1:16, card = c("Advance to Go", "Bank error in your favor", "Doctor's fee", "From sale of stock you get $50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night", "Holiday Fund matures", "Income tax refund", "It is your birthday", "Life insurance matures", "Pay hospital fees", "Pay school fees", "Recieve consultancy fee", "You are assessed for street repairs", "You have won second prize in a beauty", "You inherit $100"))
+communitydeck <-  data.frame(index = 1:16, card = c("Advance to Go", "Bank error in your favor", "Doctor's fee", "From sale of stock you get \$50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night", "Holiday Fund matures", "Income tax refund", "It is your birthday", "Life insurance matures", "Pay hospital fees", "Pay school fees", "Recieve consultancy fee", "You are assessed for street repairs", "You have won second prize in a beauty", "You inherit \$100"))
 
 
 
