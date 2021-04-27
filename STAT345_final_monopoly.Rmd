@@ -20,7 +20,12 @@ Expected Submission: You will generate a well-written R Markdown report that add
 
 
 ******************
+#Libraries
 library(setRefClass)
+
+#Read in the data
+data <- read.csv("DATA_FILE")
+DATA_FILE
 
 #Creating the Dice Rolls
 dice <- function(verbose = FALSE){
