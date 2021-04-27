@@ -23,7 +23,7 @@ Expected Submission: You will generate a well-written R Markdown report that add
 #Libraries
 library(setRefClass)
 
-#Read in the data (maybe easier to not have this...?)
+#Read in the data (Maybe easier if we make vector of the gameboard...?)
 data <- read.csv("DATA_FILE")
 DATA_FILE
 
