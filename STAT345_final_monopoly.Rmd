@@ -56,10 +56,11 @@ ggplot(data = df, aes(x = spaces_landed_on)) + geom_histogram(binwidth = 1)
 ```
 
 
-
 3. _Double Down_ Improve your system to incorporate going to jail, including the doubles-rolling condition. Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for jail)? Again, visualize this!
 
 4. _Take a Chance_ Incorporate the movement cards into your system. You can ignore the effects of non-movement cards, but not their existence! Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for Chance)? Again, visualize this!
 
 5. _Play a Game_ Extend your system to allow for up to 4 players to "play" the game. You may choose a reasonable starting board and player money level (so, you don't have to buy properties). Include payments between players, payments to the bank, and payments from the bank (there are several cards that will effect these that you should account for). You do not need to consider mortgaging properties (so a player loses when their liquid cash has run out). How long do games typically last given your starting board and money level? How does this change if money paid to the bank is placed in "Free Parking" and awarded to players landing on that space?
 
+#chance cards
+chance <- dataframe("Advance to Go", "Advance to Illinois Ave - If you pass Go, collect $200", "Advance to St. Charles Place – If you pass Go, collect $200", "Advance token to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she {he} is otherwise entitled. If Railroad is unowned, you may buy it from the Bank.", "Bank pays you dividend of $50", "Get Out of Jail Free", "Go Back 3 Spaces", "Go to Jail–Go directly to Jail–Do not pass Go, do not collect $200", "Make general repairs on all your property–For each house pay $25–For each hotel $100", "Pay poor tax of $15", "Take a trip to Reading Railroad–If you pass Go, collect $200", "Take a walk on the Boardwalk–Advance token to Boardwalk", "You have been elected Chairman of the Board–Pay each player $50", "Your building and loan matures—Collect $150", "You have won a crossword competition—Collect $100")
