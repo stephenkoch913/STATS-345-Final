@@ -26,16 +26,18 @@ library(tidyverse)
 ```
 
 ```{r}
-#Vectorized approach instead of Excel File
-monopoly_board <- data.frame(space = 1:45, title = c("Go", "Mediterranean Avenue", "Community Chest 1", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue", "Chance 1", "Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue", "Pennsylvania Railroad", "St. James Place", "Community Chest 2", "Tennessee Avenue", "New York Avenue", "Free Parking", "Kentucky Avenue", "Chance 2", "Indiana Avenue", "Illinois Avenue", "B. & O. Railroad", "Atlantic Avenue", "Ventnor Avenue", "Water Works", "Marvin Gardens", "Go to Jail", "Pacific Avenue", "{North Carolina Avenue", "Community Chest 3", "Pennsylvania Avenue", "Short Line", "Chance 3", "Park Place", "Luxury Tax", "Boardwalk", "Go to Jail", "N", "N", "N", "N", "N"), stringsAsFactors = FALSE))
+#Monopoly Board Vector
+monopoly_board <- data.frame(space = 1:46, title = c("Go", "Mediterranean Avenue", "Community Chest 1", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue", "Chance 1", "Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue", "Pennsylvania Railroad", "St. James Place", "Community Chest 2", "Tennessee Avenue", "New York Avenue", "Free Parking", "Kentucky Avenue", "Chance 2", "Indiana Avenue", "Illinois Avenue", "B. & O. Railroad", "Atlantic Avenue", "Ventnor Avenue", "Water Works", "Marvin Gardens", "Go to Jail", "Pacific Avenue", "{North Carolina Avenue", "Community Chest 3", "Pennsylvania Avenue", "Short Line", "Chance 3", "Park Place", "Luxury Tax", "Boardwalk", "Go to Jail", "N", "N", "N", "N", "N"), stringsAsFactors = FALSE)
 ```
 
 ```{r}
-chance_cards <- data.frame(index = 1:15, card = c("Advance to Go", "Advance to Illinois Ave - If you pass Go, collect $200", "Advance to St. Charles Place – If you pass Go, collect $200", "Advance token to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she {he} is otherwise entitled. If Railroad is unowned, you may buy it from the Bank.", "Bank pays you dividend of $50", "Get Out of Jail Free", "Go Back 3 Spaces", "Go to Jail–Go directly to Jail–Do not pass Go, do not collect $200", "Make general repairs on all your property–For each house pay $25–For each hotel $100", "Pay poor tax of $15", "Take a trip to Reading Railroad–If you pass Go, collect $200", "Take a walk on the Boardwalk–Advance token to Boardwalk", "You have been elected Chairman of the Board–Pay each player $50", "Your building and loan matures—Collect $150", "You have won a crossword competition—Collect $100"))
-```
+#Chance Cards Vector
+chance_cards <- data.frame(index = 1:16, card = c("Advance to Go", "Advance to Illinois Ave - If you pass Go, collect $200", "Advance to St. Charles Place – If you pass Go, collect $200", "Advance token to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she {he} is otherwise entitled. If Railroad is unowned, you may buy it from the Bank.", "Bank pays you dividend of $50", "Get Out of Jail Free", "Go Back 3 Spaces", "Go to Jail–Go directly to Jail–Do not pass Go, do not collect $200", "Make general repairs on all your property–For each house pay $25–For each hotel $100", "Pay poor tax of $15", "Take a trip to Reading Railroad–If you pass Go, collect $200", "Take a walk on the Boardwalk–Advance token to Boardwalk", "You have been elected Chairman of the Board–Pay each player $50", "Your building and loan matures—Collect $150", "You have won a crossword competition—Collect $100"))
+ ```
  
-```{r}
-community_cards <-  data.frame(index = 1:16, card = c("Advance to Go", "Bank error in your favor", "Doctor's fee", "From sale of stock you get \$50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night", "Holiday Fund matures", "Income tax refund", "It is your birthday", "Life insurance matures", "Pay hospital fees", "Pay school fees", "Recieve consultancy fee", "You are assessed for street repairs", "You have won second prize in a beauty", "You inherit \$100"))
+ ```{r}
+#Community Chest Cards Vector
+community_cards <-  data.frame(index = 1:17, card = c("Advance to Go", "Bank error in your favor", "Doctor's fee", "From sale of stock you get \$50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night", "Holiday Fund matures", "Income tax refund", "It is your birthday", "Life insurance matures", "Pay hospital fees", "Pay school fees", "Recieve consultancy fee", "You are assessed for street repairs", "You have won second prize in a beauty", "You inherit \$100"))
 ```
 
 ```{r}
@@ -47,7 +49,6 @@ dice <- function(verbose = FALSE){
   movement = sum(faces)
   if(verbose) cat("Rolled:", faces[1], faces[2], "/n")
   return(list(faces=faces, doubles=doubles, movement=movement))
-  }
 ```
 
 ```{r}
@@ -61,7 +62,7 @@ tracking <- setRefClass("tracking", fields = list(tally = "numeric"), methods = 
 ```
 
 ```{r}
-#Functions for the chance deck, community deck, switching turns, and tracking movements
+#Functions for the Chance Deck, Community Deck, Switching Turns, and Tracking Movements
 chance_function <- function(player, tracking){}
 community_function <- function(player, tracking){}
 taketurn_function <- function(player, tracking){}
@@ -69,7 +70,7 @@ space_tracking <- tracking$new(tally = rep(0,40))
 ```
 
 ```{r}
-#Set seed for unique simulation
+#Set seed for Unique Simulation
 set.seed(12345)
 ```
 
