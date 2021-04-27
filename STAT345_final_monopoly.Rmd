@@ -36,8 +36,14 @@ chance_cards <- data.frame(index = 1:16, card = c("Advance to Go", "Advance to I
  ```
  
  ```{r}
-#Community Chest Cards Vector (acting weird, won't work...?)
+#Community Chest Cards Vector
 community_cards <-  data.frame(index = 1:16, card = c("Advance to Go", "Bank error in your favor", "Doctor's fee", "From sale of stock you get \$50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night", "Holiday Fund matures", "Income tax refund", "It is your birthday", "Life insurance matures", "Pay hospital fees", "Pay school fees", "Recieve consultancy fee", "You are assessed for street repairs", "You have won second prize in a beauty", "You inherit \$100"))
+```
+
+```{r}
+#Results of Chance and Chest Cards
+chance_card_results <- data.frame(index = 1:16, advance = c(1, 25, 12, -1, -2, 6, 40, 11, -3, 0, 0, 0, 0, 0, 0, 0), stringsAsFactors = FALSE)
+chest_card_results <- data.frame(index = 1:16, advance = c(1, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), stringsAsFactors = FALSE)
 ```
 
 ```{r}
