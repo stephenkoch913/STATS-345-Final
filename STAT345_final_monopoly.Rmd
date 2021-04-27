@@ -57,9 +57,57 @@ dice <- function(verbose = FALSE){
   return(list(faces=faces, doubles=doubles, movement=movement))
 ```
 
+move_n function also written in player code line
+move_n <- function(n){
+if(verbose) cat("Player at:", pos)
+if(verbose) cat(" Player moves:", n)
+pos <- pos + n
+if(pos > 40){
+pos = pos - 40}
+if(verbose) cat(" Player now at:", pos,"\n")
+return(pos)
+}
+
+
+go_2_space_n also written in player code line
+go_2_space_n = function(n){
+if(verbose) cat("Player at:", pos,".")
+pos <-  n
+if(verbose) cat("Player at:", pos,".")
+}
+
+
+needs to stop players who are in jail but allow players who "just visiting" the jail to be able to move
+trap = function(n) {}
+
+
+if doubles are rolled, player was just visiting, or after the thrid turn, the player is allowed out
+getout = function(n) {}
+
+
+gotojail function also written in player code line
+gotojail = function(n) {
+if(verbose) cat("Player at:", pos,".")
+if (pos == 31) (pos = 11)
+if(verbose) cat("Player in Jail")
+}
+
+
 ```{r}
 #Creating the Player(s)
-player <- setRefClass("player", fields = list(pos="numeric", verbose='logical'), method = list(move_n = function(n){}, go_2_space_n = function(n){}, trap = function(n){}, getout = function(n){}, gotojail = function(n){}))
+player <- setRefClass("player", fields = list(pos="numeric", verbose='logical'), method = list(move_n = function(n){if(verbose) cat("Player at:", pos)
+if(verbose) cat(" Player moves:", n)
+pos <- pos + n
+if(pos > 40){
+ pos = pos - 40}
+
+if(verbose) cat(" Player now at:", pos,"\n")
+return(pos)}, go_2_space_n = function(n){if(verbose) cat("Player at:", pos,".")
+pos <-  n
+if(verbose) cat("Player at:", pos,".")}, trap = function(n){}, getout = function(n){}, gotojail = function(n){
+if(verbose) cat("Player at:", pos,".")
+if (pos == 31) (pos = 11)
+if(verbose) cat("Player in Jail")}))
 ```
 
 ```{r}
@@ -77,7 +125,7 @@ space_tracking <- tracking$new(tally = rep(0,40))
 
 ```{r}
 #Set seed for Unique Simulation
-set.seed(12345)
+set.seed(12345)t 
 ```
 
 ```{r}
