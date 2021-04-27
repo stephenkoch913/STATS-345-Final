@@ -23,7 +23,7 @@ Expected Submission: You will generate a well-written R Markdown report that add
 #Libraries
 library(setRefClass)
 
-#Read in the data
+#Read in the data (maybe easier to not have this...?)
 data <- read.csv("DATA_FILE")
 DATA_FILE
 
@@ -41,6 +41,32 @@ player <- setRefClass("player", fields = list(pos="numeric", verbose='logical'),
 
 #Tracking the Player's Movements
 tracking <- setRefClass("tracking", fields = list(tally = "numeric"), methods = list(increase_count = function(n){tally[n] <<- tally[n] + 1}))
+
+checkchance <- function(player, tracking){}
+checkcommunity <- function(player, tracking){}
+taketurn <- function(player, tracking){}
+set.seed(12345)
+space_tracking <- tracking$new(tally = rep(0,40))
+
+#Simulating game with 4 players
+for(i in 1:1000){
+  player1 <- player$new(pos = 1, verbose = FALSE)
+  player2 <- player$new(pos = 1, verbose = FALSE)
+  player3 <- player$new(pos = 1, verbose = FALSE)
+  player4 <- player$new(pos = 1, verbose = FALSE)
+  for(i in 1:150){
+    if(player1$verbose) cat("Player 1 turn\n")
+    taketurn(player1, space_tracking)
+    if(player2$verbose) cat("Player 2 turn\n")
+    taketurn(player1, space_tracking)
+    if(player3$verbose) cat("Player 3 turn\n")
+    taketurn(player1, space_tracking)
+    if(player4$verbose) cat("Player 4 turn\n")
+    taketurn(player1, space_tracking)
+  }
+}
+
+
 
 
 
