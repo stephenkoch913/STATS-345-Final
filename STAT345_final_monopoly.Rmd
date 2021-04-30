@@ -57,6 +57,7 @@ dice <- function(verbose = FALSE){
   return(list(faces=faces, doubles=doubles, movement=movement))
 ```
 
+
 move_n function also written in player code line
 move_n <- function(n){
 if(verbose) cat("Player at:", pos)
@@ -78,24 +79,36 @@ if(verbose) cat("Player at:", pos,".")
 
 
 needs to stop players who are in jail but allow players who "just visiting" the jail to be able to move
-trap = function(n) {}
+trap = function(n) {
+if(verbose) cat("Player at:", pos,".")
+pos <- 11
+if(verbose) cat(" Player now in jail.\n")
+jail <- jail + 1
+if(jail == 3) (getout(n))
+}
 
 
 if doubles are rolled, player was just visiting, or after the thrid turn, the player is allowed out
-getout = function(n) {}
+getout = function(n) {
+jail <- 0
+if(verbose) cat("Player free from jail")
+pos <- 11 + n
+if(verbose) cat("Player now at:", pos, "\n")
+}
 
 
 gotojail function also written in player code line
 gotojail = function(n) {
 if(verbose) cat("Player at:", pos,".")
 if (pos == 31) (pos = 11)
+jail <- 1
 if(verbose) cat("Player in Jail")
 }
 
 
 ```{r}
 #Creating the Player(s)
-player <- setRefClass("player", fields = list(pos="numeric", verbose='logical'), method = list(move_n = function(n){if(verbose) cat("Player at:", pos)
+player <- setRefClass("player", fields = list(pos="numeric", verbose='logical', jail = "numeric", rolldouble = "numeric"), method = list(move_n = function(n){if(verbose) cat("Player at:", pos)
 if(verbose) cat(" Player moves:", n)
 pos <- pos + n
 if(pos > 40){
@@ -104,7 +117,13 @@ if(pos > 40){
 if(verbose) cat(" Player now at:", pos,"\n")
 return(pos)}, go_2_space_n = function(n){if(verbose) cat("Player at:", pos,".")
 pos <-  n
-if(verbose) cat("Player at:", pos,".")}, trap = function(n){}, getout = function(n){}, gotojail = function(n){
+if(verbose) cat("Player at:", pos,".")}, trap = function(n){if(verbose) cat("Player at:", pos,".")
+pos <- 11
+if(verbose) cat(" Player now in jail.\n")
+jail <- 1}, getout = function(n){jail <- 0
+if(verbose) cat("Player free from jail")
+pos <- 11 + n
+if(verbose) cat("Player now at:", pos, "\n")}, gotojail = function(n){
 if(verbose) cat("Player at:", pos,".")
 if (pos == 31) (pos = 11)
 if(verbose) cat("Player in Jail")}))
@@ -119,7 +138,8 @@ tracking <- setRefClass("tracking", fields = list(tally = "numeric"), methods = 
 #Functions for the Chance Deck, Community Deck, Switching Turns, and Tracking Movements
 chance_function <- function(player, tracking){}
 community_function <- function(player, tracking){}
-taketurn_function <- function(player, tracking){}
+taketurn_function <- function(player, tracking){
+}
 space_tracking <- tracking$new(tally = rep(0,40))
 ```
 
