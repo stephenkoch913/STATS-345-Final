@@ -27,7 +27,6 @@ Expected Submission: You will generate a well-written R Markdown report that add
 ******************
 ```{r}
 #Libraries
-library(dplyr)
 library(tidyverse)
 library(jtools)
 ```
