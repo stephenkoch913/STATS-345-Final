@@ -108,14 +108,19 @@ if(verbose) cat("Player in Jail")
 
 ```{r}
 #Creating the Player(s)
-player <- setRefClass("player", fields = list(pos="numeric", verbose='logical', jail = "numeric", rolldouble = "numeric"), method = list(move_n = function(n){if(verbose) cat("Player at:", pos)
+player <- setRefClass("player", fields = list(pos="numeric", verbose='logical', jail = "numeric", rolldouble = "numeric"), method = list(
+
+move_n = function(n){
+if(verbose) cat("Player at:", pos)
 if(verbose) cat(" Player moves:", n)
 pos <- pos + n
 if(pos > 40){
  pos = pos - 40}
-
 if(verbose) cat(" Player now at:", pos,"\n")
-return(pos)}, go_2_space_n = function(n){if(verbose) cat("Player at:", pos,".")
+return(pos)}, 
+
+go_2_space_n = function(n){
+if(verbose) cat("Player at:", pos,".")
 pos <-  n
 if(verbose) cat("Player at:", pos,".")}, trap = function(n){if(verbose) cat("Player at:", pos,".")
 pos <- 11
@@ -123,7 +128,9 @@ if(verbose) cat(" Player now in jail.\n")
 jail <- 1}, getout = function(n){jail <- 0
 if(verbose) cat("Player free from jail")
 pos <- 11 + n
-if(verbose) cat("Player now at:", pos, "\n")}, gotojail = function(n){
+if(verbose) cat("Player now at:", pos, "\n")},
+
+gotojail = function(n){
 if(verbose) cat("Player at:", pos,".")
 if (pos == 31) (pos = 11)
 if(verbose) cat("Player in Jail")}))
@@ -136,8 +143,33 @@ tracking <- setRefClass("tracking", fields = list(tally = "numeric"), methods = 
 
 ```{r}
 #Functions for the Chance Deck, Community Deck, Switching Turns, and Tracking Movements
-chance_function <- function(player, tracking){}
-community_function <- function(player, tracking){}
+chance_function <- function(player, tracking, verbose = FALSE){
+draw <- sample(1:15, 1)
+if (draw %in% 1:9) {
+tracking$increase_count(player$pos)
+player$go_2_space_n(chance_card_results[draw])
+if(verbose) {
+cat("Tally position", player$pos, as.charecter(monoploy_board$title[player$pos]), "\n")
+cat("Player now at", chance_deck[draw], "\n")
+} }
+if (verbose) {
+cat("Draw Chance Card ", draw, as.charecter(chance_deck$title[player$pos]), "\n") 
+} }
+
+
+community_function <- function(player, tracking, verbose=FALSE){
+draw <- sample(1:16, 1)
+if (draw %in% 1:2) {
+tracking$increase_count(player$pos)
+player$go_2_space_n(chest_card_results[draw])
+if(verbose) {
+cat("Tally position", player$pos, as.charecter(monoploy_board$title[player$pos]), "\n")
+cat("Player now at", community_deck[draw], "\n")
+} }
+if (verbose) {
+cat("Draw Community Chest Card ", draw, as.charecter(community_deck$title[player$pos]), "\n")
+} }
+
 
 taketurn_function <- function(player, tracking){
 roll <- dice()
@@ -160,8 +192,7 @@ player$doubles <- 0
 go_again <- FALSE
 } else {
 player$move_n(roll$movement)
-}
-} else if ( !roll$doubles & player$jail >= 1) {
+} } else if ( !roll$doubles & player$jail >= 1) {
 #get out of jail if 3rd turn in jail
 if (player$jail == 3){
 # may need to change
@@ -178,20 +209,18 @@ if (player$pos %in% c(8,23,37)){
 drawchance(player, tracking, verbose)
 if (player$jail){
 go_again <- FALSE
-}
-}
+}}
 #if player isn't on "go to jail" spot
 if (player$pos != 31){
 tracking$increase_count(player$pos)
 if (go_again){
 taketurn(player, tracking)
-}
-} else {
+}} else {
 #go to jail and tally location
 player$go_to_jail()
 tracking$increase_count(player$pos)
-}
-}
+}}
+
 
 space_tracking <- tracking$new(tally = rep(0,40))
 ```
