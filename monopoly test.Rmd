@@ -1,0 +1,275 @@
+---
+title: "Monopoly Test"
+output: html_document
+---
+
+
+---
+title: "STAT 345 Final Project - Real Estate"
+author: "STAT 345 - Braden Barglind, Adam Steckbauer, Stephen Koch, Douglas Klister"
+output: html_document
+---
+
+Expected Submission: You will generate a well-written R Markdown report that addresses the following prompts. This R Markdown report should source your analysis code and only display top-level, abstracted code _if/when appropriate_. Choices made during the analysis project should be described and justified in the report. You will present on your results during the final exam period for the semester. The written report (knitted file), presentation file, and your analysis code should be submitted to D2L by Tuesday, May 14 at 12:15pm. 
+
+**General advice:** Get started early. If you wait to the last minute, it will not go well. For this project, you may find yourself spending a reasonable amount of time _searching_ for help.
+
+1. _Rules!_ Monopoly has several rules related to movement around the game board. Movement is affected by standard dice rolls, special conditions for some dice rolls, and game cards. Find and summarize these rules. 
+
+2. _Let's Get Moving_ Build a system that allows for up to 4 players to move around the game board. As a first attempt, focus on standard dice rolls, ignoring additional rules related to rolling doubles, jail, or special cards. Which properties are landed on most frequently? Create a visualization for this!
+
+3. _Double Down_ Improve your system to incorporate going to jail, including the doubles-rolling condition. Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for jail)? Again, visualize this!
+
+4. _Take a Chance_ Incorporate the movement cards into your system. You can ignore the effects of non-movement cards, but not their existence! Which properties are landed on most frequently now? Has this changed dramatically from the previous system (that didn't account for Chance)? Again, visualize this!
+
+5. _Play a Game_ Extend your system to allow for up to 4 players to "play" the game. You may choose a reasonable starting board and player money level (so, you don't have to buy properties). Include payments between players, payments to the bank, and payments from the bank (there are several cards that will effect these that you should account for). You do not need to consider mortgaging properties (so a player loses when their liquid cash has run out). How long do games typically last given your starting board and money level? How does this change if money paid to the bank is placed in "Free Parking" and awarded to players landing on that space?
+
+******************
+```{r}
+#Libraries
+library(dplyr)
+library(tidyverse)
+library(jtools)
+```
+
+```{r}
+#Monopoly Board Vector
+monopoly_board <- data.frame(space = 1:46, title = c("Go", "Mediterranean Avenue", "Community Chest 1", "Baltic Avenue", "Income Tax", "Reading Railroad", "Oriental Avenue", "Chance 1", "Vermont Avenue", "Connecticut Avenue", "Jail", "St. Charles Place", "Electric Company", "States Avenue", "Virginia Avenue", "Pennsylvania Railroad", "St. James Place", "Community Chest 2", "Tennessee Avenue", "New York Avenue", "Free Parking", "Kentucky Avenue", "Chance 2", "Indiana Avenue", "Illinois Avenue", "B. & O. Railroad", "Atlantic Avenue", "Ventnor Avenue", "Water Works", "Marvin Gardens", "Go to Jail", "Pacific Avenue", "{North Carolina Avenue", "Community Chest 3", "Pennsylvania Avenue", "Short Line", "Chance 3", "Park Place", "Luxury Tax", "Boardwalk", "Go to Jail", "N", "N", "N", "N", "N"), stringsAsFactors = FALSE)
+```
+
+```{r}
+#Chance Cards Vector
+chance_cards <- data.frame(index = 1:16, card = c("Advance to Go", "Advance to Illinois Ave - If you pass Go, collect $200", "Advance to St. Charles Place – If you pass Go, collect $200", "Advance token to nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.", "Advance token to the nearest Railroad and pay owner twice the rental to which he/she {he} is otherwise entitled. If Railroad is unowned, you may buy it from the Bank.", "Bank pays you dividend of $50", "Get Out of Jail Free", "Go Back 3 Spaces", "Go to Jail–Go directly to Jail–Do not pass Go, do not collect $200", "Make general repairs on all your property–For each house pay $25–For each hotel $100", "Pay poor tax of $15", "Take a trip to Reading Railroad–If you pass Go, collect $200", "Take a walk on the Boardwalk–Advance token to Boardwalk", "You have been elected Chairman of the Board–Pay each player $50", "Your building and loan matures—Collect $150", "You have won a crossword competition—Collect $100"))
+```
+ 
+ 
+```{r}
+#Community Chest Cards Vector
+community_cards <-  data.frame(index = 1:17, card = c("Advance to Go", "Bank error in your favor", "Doctor's fee", "From sale of stock you get $50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night", "Holiday Fund matures", "Income tax refund", "It is your birthday", "Life insurance matures", "Pay hospital fees", "Pay school fees", "Recieve consultancy fee", "You are assessed for street repairs", "You have won second prize in a beauty", "You inherit $100"))
+```
+
+
+
+```{r}
+#Results of Chance and Chest Cards
+chance_card_results <- data.frame(index = 1:16, advance = c(1, 25, 12, -1, -2, 6, 40, 11, -3, 0, 0, 0, 0, 0, 0, 0), stringsAsFactors = FALSE)
+chest_card_results <- data.frame(index = 1:16, advance = c(1, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), stringsAsFactors = FALSE)
+```
+
+
+```{r}
+#Creating the Dice Rolls
+dice <- function(verbose = FALSE){
+  faces <- sample(1:6,2, replace = TRUE)
+  if(faces[1] == faces[2]) doubles = TRUE
+  else doubles = FALSE
+  movement = sum(faces)
+  if(verbose) cat("Rolled:", faces[1], faces[2], "/n")
+  return(list(faces=faces, doubles=doubles, movement=movement))
+}
+```
+
+move_n function also written in player code line
+move_n <- function(n){
+if(verbose) cat("Player at:", pos)
+if(verbose) cat(" Player moves:", n)
+pos <- pos + n
+if(pos > 40){
+pos = pos - 40}
+if(verbose) cat(" Player now at:", pos,"\n")
+return(pos)
+}
+
+go_2_space_n also written in player code line
+go_2_space_n = function(n){
+if(verbose) cat("Player at:", pos,".")
+pos <-  n
+if(verbose) cat("Player at:", pos,".")
+}
+
+needs to stop players who are in jail but allow players who "just visiting" the jail to be able to move
+trap = function(n) {
+if(verbose) cat("Player at:", pos,".")
+pos <- 11
+if(verbose) cat(" Player now in jail.\n")
+jail <- jail + 1
+if(jail == 3) (getout(n))
+}
+
+if doubles are rolled, player was just visiting, or after the thrid turn, the player is allowed out
+getout = function(n) {
+jail <- 0
+if(verbose) cat("Player free from jail")
+pos <- 11 + n
+if(verbose) cat("Player now at:", pos, "\n")
+}
+
+gotojail function also written in player code line
+gotojail = function(n) {
+if(verbose) cat("Player at:", pos,".")
+if (pos == 31) (pos = 11)
+jail <- 1
+if(verbose) cat("Player in Jail")
+}
+
+```{r}
+#Creating the Player(s)
+player <- setRefClass("player", fields = list(pos="numeric", verbose='logical', jail = "numeric", rolldouble = "numeric"), method = list(
+  
+move_n = function(n){
+if(verbose) cat("Player at:", pos)
+if(verbose) cat(" Player moves:", n)
+pos <<- pos + n
+if(pos > 40){
+ pos <<- pos - 40}
+if(verbose) cat(" Player now at:", pos,"\n")
+return(pos)}, 
+
+go_2_space_n = function(n){
+if(verbose) cat("Player at:", pos,".")
+pos <<-  n
+if(verbose) cat("Player at:", pos,".")},
+
+trap = function(n){
+if(verbose) cat("Player at:", pos,".")
+pos <<- 11
+if(verbose) cat(" Player now in jail.\n")
+jail <<- 1},
+
+getout = function(n){
+  jail <<- 0
+if(verbose) cat("Player free from jail")
+pos <<- 11 + n
+if(verbose) cat("Player now at:", pos, "\n")},
+
+go_to_jail = function(n){
+if(verbose) cat("Player at:", pos,".")
+if (pos == 31) (pos <<- 11)
+if(verbose) cat("Player in Jail")}))
+```
+
+
+```{r}
+#Tracking the Player's Movements
+tracking <- setRefClass("tracking", fields = list(tally = "numeric"), methods = list(increase_count = function(n){tally[n] <<- tally[n] + 1}))
+```
+
+
+```{r}
+#Functions for the Chance Deck, Community Deck, Switching Turns, and Tracking Movements
+drawchance <- function(player, tracking, verbose = TRUE){
+draw <- sample(1:15, 1)
+if (draw %in% 1:9) {
+tracking$increase_count(player$pos)
+player$go_2_space_n(chance_card_results[[draw]])
+# if(verbose) {
+# cat("Tally position", player$pos, as.character(monopoly_board$title[player$pos]), "\n")
+# cat("Player now at", chance_cards[[draw]], "\n")
+# } 
+}
+# if (verbose) {
+# cat("Draw Chance Card ", draw, as.character(chance_cards$title[player$pos]), "\n") 
+# } 
+}
+
+community_function <- function(player, tracking, verbose = TRUE){
+draw <- sample(1:16, 1)
+if (draw %in% 1:2) {
+tracking$increase_count(player$pos)
+player$go_2_space_n(chest_card_results[[draw]])
+# if(verbose) {
+# cat("Tally position", player$pos, as.character(monopoly_board$title[player$pos]), "\n")
+# cat("Player now at", community_deck[[draw]], "\n")
+# } 
+}
+# if (verbose) {
+# cat("Draw Community Chest Card ", draw, as.character(community_deck$title[player$pos]), "\n")
+# }
+}
+
+taketurn <- function(player, space_tracking){
+roll <- dice()
+#count number of doubles
+go_again <- roll$doubles
+#get out of jail if in jail and doubles are rolled
+if (roll$doubles & player$jail >= 0) {
+player$jail <- 0
+#may need to modify move_n
+player$move_n(roll$movement)
+roll$doubles <- 0
+#may need to modify
+go_again <- FALSE
+} else if(roll$doubles & player$jail == 0)
+roll$doubles <- roll$doubles + 1
+#if player rolled 3 doubles in a row, go to jail
+if (roll$doubles == 3){
+player$go_to_jail()
+roll$doubles <- 0
+go_again <- FALSE
+} else {
+player$move_n(roll$movement)
+} 
+if ( !roll$doubles & player$jail >= 1) {
+#get out of jail if 3rd turn in jail
+if (player$jail == 3){
+# may need to change
+player$move_n(roll$movement)
+player$jail <- 0
+} else {
+player$jail <- player$jail + 1}
+} else if ( !roll$doubles & !player$jail){
+player$move_n(roll$movement)
+roll$doubles <- 0
+}
+#draw chance card
+if (player$pos %in% c(8,23,37)){
+drawchance(player, tracking, verbose)
+if (player$jail){
+go_again <- FALSE
+}}
+#if player isn't on "go to jail" spot
+if (player$pos != 31){
+tracking$increase_count(player$pos)
+if (go_again){
+taketurn(player, tracking)
+}} else {
+#go to jail and tally location
+player$go_to_jail()
+tracking$increase_count(player$pos)
+}}
+space_tracking <- tracking$new(tally = rep(0,40))
+```
+
+```{r}
+#Set seed for Unique Simulation
+set.seed(12345)
+```
+
+```{r}
+#Simulating game with 4 players. Simulate 1000 times to ensure a large enough sample and accuracy of the means. Each player has 30 turns in a game on average, according to Google. 
+for(i in 1:1000){
+  player1 <- player$new(pos = 1, jail = 0, verbose = FALSE)
+  player2 <- player$new(pos = 1, jail = 0, verbose = FALSE)
+  player3 <- player$new(pos = 1, jail = 0, verbose = FALSE)
+  player4 <- player$new(pos = 1, jail = 0, verbose = FALSE)
+  for(i in 1:30){
+    if(player1$verbose) cat("Player 1 turn\n")
+    taketurn(player1, space_tracking)
+    if(player2$verbose) cat("Player 2 turn\n")
+    taketurn(player2, space_tracking)
+    if(player3$verbose) cat("Player 3 turn\n")
+    taketurn(player3, space_tracking)
+    if(player4$verbose) cat("Player 4 turn\n")
+    taketurn(player4, space_tracking)
+  }
+}
+```
+
+```{r}
+#Sim Results and Visualization
+results <- cbind(monopoly_board[1:40,1:2], tally = space_tracking$tally)
+results <- results %>% mutate(prop = results$tally/sum(results$tally)) %>% arrange(desc(prop))
+print(results)
+sum(results$tally)
+barplot(results$prop)
+```
