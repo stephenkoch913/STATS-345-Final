@@ -149,11 +149,11 @@ if (draw %in% 1:9) {
 tracking$increase_count(player$pos)
 player$go_2_space_n(chance_card_results[draw])
 if(verbose) {
-cat("Tally position", player$pos, as.charecter(monoploy_board$title[player$pos]), "\n")
+cat("Tally position", player$pos, as.character(monopoly_board$title[player$pos]), "\n")
 cat("Player now at", chance_deck[draw], "\n")
 } }
 if (verbose) {
-cat("Draw Chance Card ", draw, as.charecter(chance_deck$title[player$pos]), "\n") 
+cat("Draw Chance Card ", draw, as.character(chance_deck$title[player$pos]), "\n") 
 } }
 
 
@@ -163,11 +163,11 @@ if (draw %in% 1:2) {
 tracking$increase_count(player$pos)
 player$go_2_space_n(chest_card_results[draw])
 if(verbose) {
-cat("Tally position", player$pos, as.charecter(monoploy_board$title[player$pos]), "\n")
+cat("Tally position", player$pos, as.character(monopoly_board$title[player$pos]), "\n")
 cat("Player now at", community_deck[draw], "\n")
 } }
 if (verbose) {
-cat("Draw Community Chest Card ", draw, as.charecter(community_deck$title[player$pos]), "\n")
+cat("Draw Community Chest Card ", draw, as.character(community_deck$title[player$pos]), "\n")
 } }
 
 
