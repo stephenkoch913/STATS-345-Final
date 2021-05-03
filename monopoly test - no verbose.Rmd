@@ -47,14 +47,6 @@ chance_cards <- data.frame(index = 1:16, card = c("Advance to Go", "Advance to I
 community_cards <-  data.frame(index = 1:17, card = c("Advance to Go", "Bank error in your favor", "Doctor's fee", "From sale of stock you get $50", "Get Out of Jail Free", "Go to Jail", "Grand Opera Night", "Holiday Fund matures", "Income tax refund", "It is your birthday", "Life insurance matures", "Pay hospital fees", "Pay school fees", "Recieve consultancy fee", "You are assessed for street repairs", "You have won second prize in a beauty", "You inherit $100"))
 ```
 
-
-```{r}
-#Results of Chance and Chest Cards
-chance_card_results <- data.frame(index = 1:16, advance = c(1, 25, 12, -1, -2, 6, 40, 11, -3, 0, 0, 0, 0, 0, 0, 0), stringsAsFactors = FALSE)
-chest_card_results <- data.frame(index = 1:16, advance = c(1, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), stringsAsFactors = FALSE)
-```
-
-
 ```{r}
 #Creating the Dice Rolls
 dice <- function(){
@@ -68,60 +60,84 @@ dice <- function(){
 
 
 ```{r}
-#Creating the Player(s)
+#Creating the Players
+#the setRefClass function allows for the creation of fields (similar to variables) and methods (similar to functions) that are associated with and referenced by the specific player
+# the fields (variables) created for the player inlcude: pos - used to track the position of the player
+                                                        jail - tracks if the player is in jail and if they are how many turns they have been in jail
+                                                        rolldouble - tracks how many doubles have been rolled in a row, if exceeds three, the player is sent to jail
+# the methods (functions) created for each player include: move_n - used to add the new roll(s) of the player to the positon to find where the player currently is
+                                                           go_to_space_n - used to update the position of the player
+                                                           increase_jail - adds one to jail when the player is placed in jail or the player fails to roll doubles when in jail
+                                                           reset_jail - resets the variable jail when the player gets out of jail
+                                                           increase_double - adds one to the variable double when doubles are rolled
+                                                           reset_double - resets the amount of doubles rolled in a row to 0 when the player does not roll doubles
 player <- setRefClass("player", fields = list(
+  #positon of player on the board
   pos="numeric", 
+  
+  #if 0, player is not in jail, if greater than 0, represents amount of turns player has been in jail
   jail = "numeric",
+  
+  # amount of doubles player has rolled in a row
   rolldouble = "numeric"
   ), 
 method = list(
+moves player by "n" positions and if pos is greater than 40, restarts player at beginning of game board
 move_n = function(n){
+#adds n which is found by roll of dice to position
 pos <<- pos + n
+#if position if greater than 40, subtracts 40 to start player at beginning of gameboard
 if(pos > 40) pos <<- pos - 40
 return(pos)}, 
 
+#sends player to specifc position
 go_to_space_n = function(n){
+#sets the position of the player to n
 pos <<-  n
 },
 
+#adds on to jail
 increase_jail = function(){
   jail <<- jail + 1
 },
 
+#resets jail to 0
 reset_jail = function(){
   jail <<- 0
     },
 
+# increases doubles by 1 if doubles are rolled
 increase_double = function(){
   rolldouble <<- rolldouble + 1
     },
 
+#resets doubles to 0 if doubles are not rolled
 reset_double = function(){
   rolldouble <<- 0
-    },
-
-trap = function(n){
-pos <<- 11
-jail <<- 1},
-
-getout = function(n){
-  jail <<- 0
-pos <<- 11 + n
-},
-
-go_to_jail = function(n){
-if (pos == 31) (pos <<- 11)
-}))
+    }
+ }
 ```
 
 
 ```{r}
-#Functions for the Chance Deck, Community Deck, Switching Turns, and Tracking Movements
+#Function for the Chance Deck
+#called when a player lands on one of the three chance positions
+#takes two arguments: player and tracking
+#no output but updates the players positons and the tally of the amount of times each positions have been landed on if neccessary
+#not all chance cards are taken into account since some are too complicated for this simulation
+
 drawchance <- function(player, tracking) {
+#draw finds a number between one and fifteen which represents a specifc chance card by using the sample function
 draw <- sample(1:15, 1)
+
+#if the draw is between one and nine, there is movement associated with the chance card which access the if statement
 if (draw %in% 1:9) {
-tracking$increase_count(player$pos)
-}
+  #tracking is increased to record the position which the player has landed on
+  tracking$increase_count(player$pos)
+  
+  #the next 20 lines of code determine which specifc chance card was drawn and how the player is moved based on the chance card drawn
+  #based on the card drawn, the go_to_space_n, go_to_jail, or move_n function is accessed
+  #if the card drawn is 4 or 5 the current positon is aksed and based on the player's current postion they are moved to a new position
   if (draw == 1){
     player$go_to_space_n(1) }
   if (draw == 2){
@@ -152,19 +168,31 @@ tracking$increase_count(player$pos)
     player$go_to_jail() }
   if (draw == 9){
     player$move_n(-3) }
-}
+} }
 ```
 
 
 ```{r}
+#Function for the Community Chest Deck
+#called when a player lands on one of the three community chest positions
+#takes two arguments: player and tracking
+#no output but updates the players positons and the tally of the amount of times each positions have been landed on if neccessary
+#not all community chest cards are taken into account since some are too complicated for this simulation
+
 community_function <- function(player, tracking) {
+#draw finds a number between one and sixteen which represents a specifc chance card by using the sample function
 draw <- sample(1:16, 1)
 
+#if the dar is either 1 or 2 the player moves thier position
 if (draw %in% 1:2) {
+  #the tracking is updated based on the position that the player orignally landed on
   tracking$increase_count(player$pos) }
 
+#if one is drawn the player is sent too the "Go" position
 if (draw == 1){
   player$go_to_space_n(1) }
+  
+#if two is drawn the player is sent too the "Jail" position
 if (draw == 2){
   player$go_to_jail() }
 }
@@ -173,11 +201,16 @@ if (draw == 2){
 
 ```{r}
 #Tracking the Player's Movements
+#the setRefClass function allows for the creation of fields (similar to variables) and methods (similar to functions) that are associated with and referenced by the specific player
+# the field (variable) include tally - used to keep track of the amount of times each position has been landed on
+# the methods (functions) include increase_count - used to increase the tally when a player lands on a new position
 tracking <- setRefClass("tracking",
     fields = list(
+      #tally is a list of amounts of times each positon has been landed on
       tally = "numeric"
 ), 
     methods = list(
+      #increase_count adds one when each specifc position is landed on by indexing the specifc postions
       increase_count = function(n){
         tally[n] <<- tally[n] + 1
         } 
@@ -187,26 +220,47 @@ tracking <- setRefClass("tracking",
 
 
 ```{r}
+#Initiates Players' Turns
+#take turn plays each players turn by calling other applicable functions 
+#takes two arguments: player and tracking
+#no output but calls functions to update the player's positon and the tally of the amount of times each positions have been landed on
+
 taketurn <- function(player, tracking) {
+#roll is set to the number produced byt the function dice
 roll <- dice()
-#count number of doubles
+
+#value of doubles (TRUE or FLASE) is set to go_again
 go_again <- roll$doubles
-#get out of jail if in jail and doubles are rolled
+
+# if the doubles id true and player's variable "Jail" is greater than one the player gets out of jail
 if (roll$doubles & player$jail) {
+#jail is reset to 0
 player$reset_jail()
-#may need to modify move_n
+
+#player moves n positions from the jail based on a new roll
 player$move_n(roll$movement)
+
+#doubles are reset to 0
 roll$reset_double()
-#may need to modify
+
+#go_again is set to FLASE to stop player
 go_again <- FALSE
+
+#if player rolls doubles and is not in jail, doubles increase until they are sent to jail or fail to roll doubles
 } else if(roll$doubles & !player$jail) {
+
+#increase_double is called for the specifc player
 player$increase_double()
-#if player rolled 3 doubles in a row, go to jail
+
+#if player rolled 3 doubles in a row, the player is sent to jail
 if (roll$doubles == 3){
+#go to jail and reset double function is called
 player$go_to_jail()
 roll$reset_double()
+#go_again is set to FLASE to stop the player from going
 go_again <- FALSE
 } else {
+#if double sis not at 3, the player continues to roll and play
 player$move_n(roll$movement)
 } 
 } else if ( !roll$doubles & player$jail) {
