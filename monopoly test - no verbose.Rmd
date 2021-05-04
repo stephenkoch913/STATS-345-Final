@@ -259,33 +259,49 @@ player$go_to_jail()
 roll$reset_double()
 #go_again is set to FLASE to stop the player from going
 go_again <- FALSE
+
 } else {
-#if double sis not at 3, the player continues to roll and play
+#if double is not at 3, the player continues to roll and play
 player$move_n(roll$movement)
-} 
-} else if ( !roll$doubles & player$jail) {
+
+} } else if ( !roll$doubles & player$jail) {
 #get out of jail if 3rd turn in jail
+
 if (player$jail == 3){
+#the variable jail ie equal to 3, the player automatically escapes from jail
+#the move_n and reset_jail functions are called to set jail to 0 and move the player by n positions
 player$move_n(roll$movement)
 player$reset_jail()
+
 } else {
+# if jail is less than 3, the increase_jail function is called to record that the player has spent a turn in jail
 player$increase_jail()
-}
-} else if ( !roll$doubles & !player$jail){
+
+} } else if ( !roll$doubles & !player$jail){
+#if the player fails to roll doubles and is not in jail, the player moves using the move_n function and resets their doubles 
+#this chucnk runs for most "usual" situations
 player$move_n(roll$movement)
 roll$reset_double
 }
+
 #draw chance card
 if (player$pos %in% c(8,23,37)){
 drawchance(player, tracking)
+
+#the the player is sent to jail, go_again is FALSE and they do no get "Go" money
 if (player$jail){
 go_again <- FALSE
 } }
+
 #if player isn't on "go to jail" spot
 if (player$pos != 31) {
+Tracking keeps track of the amount of occurences each position is landed on
 tracking$increase_count(player$pos)
+
 if (go_again){
+#if go_again is TRUE the player would continue their turn
 taketurn(player, tracking)
+
 } } else {
 #go to jail and tally location
 player$go_to_jail()
@@ -300,14 +316,17 @@ set.seed(12345)
 
 
 ```{r}
+#space tracking keeps track of how many times each location has been visited
 space_tracking <- tracking$new(tally = rep(0,40))
 #Simulating game with 4 players. Simulate 1000 times to ensure a large enough sample and accuracy of the means. Each player has 30 turns in a game on average, according to Google. 
 
+#four players are initialized 1000 times fro each simulating
 for(i in 1:1000){
   player1 <- player$new(pos = 1, jail = 0, rolldouble = 0)
   player2 <- player$new(pos = 1, jail = 0, rolldouble = 0)
   player3 <- player$new(pos = 1, jail = 0, rolldouble = 0)
   player4 <- player$new(pos = 1, jail = 0, rolldouble = 0)
+  #each player takes 30 turns
   for(i in 1:30){
     taketurn(player1, space_tracking)
     taketurn(player2, space_tracking)
