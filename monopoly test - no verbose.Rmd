@@ -49,6 +49,11 @@ community_cards <-  data.frame(index = 1:17, card = c("Advance to Go", "Bank err
 
 ```{r}
 #Creating the Dice Rolls
+#dice has no arguements
+#dice outputs: faces - two random numbers between 1 and 6 (two ints)
+               doubles - if doubles were rolled (TRUE or FALSE)
+               movement - the total of the two randomly generated numbers between 1 and 6 (int)
+
 dice <- function(){
   faces <- sample(1:6,2, replace = TRUE)
   if(faces[1] == faces[2]) doubles = TRUE
@@ -320,13 +325,14 @@ set.seed(12345)
 space_tracking <- tracking$new(tally = rep(0,40))
 #Simulating game with 4 players. Simulate 1000 times to ensure a large enough sample and accuracy of the means. Each player has 30 turns in a game on average, according to Google. 
 
-#four players are initialized 1000 times fro each simulating
+#each player is initialized with three feilds pos, jail, and rolldouble set to values for starting the game
 for(i in 1:1000){
   player1 <- player$new(pos = 1, jail = 0, rolldouble = 0)
   player2 <- player$new(pos = 1, jail = 0, rolldouble = 0)
   player3 <- player$new(pos = 1, jail = 0, rolldouble = 0)
   player4 <- player$new(pos = 1, jail = 0, rolldouble = 0)
-  #each player takes 30 turns
+  
+  #take turn function is called with inputs of the specifc player and space tracking
   for(i in 1:30){
     taketurn(player1, space_tracking)
     taketurn(player2, space_tracking)
@@ -336,11 +342,15 @@ for(i in 1:1000){
 }
 
 cat("1000 Games Ran \n")
-# the results after 100 turns. No rules have been implemented
+# the results after 1000 turns
+#adding the tally of how many times each property was landed on in the simulation to the dataframe monopoly board
 results <- cbind(monopoly_board, tally = space_tracking$tally)
+#adding the proportion of times each property was landed on in the simulation to the dataframe
 results <- cbind(results, rel = results$tally/sum(results$tally))
 print(results)
 sum(results$tally)
+
+#presenting the results from most likely to be landed on to least likely
 arrange(results, desc(rel))
 ```
 
