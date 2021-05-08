@@ -90,6 +90,12 @@ just_prop %>% select(space, title, Identifier, Sale_Cost, mean_turns_to_break_ev
 ```
 
 ```{r}
-just_prop %>% select(space, title, Identifier, Sale_Cost, mean_turns_to_break_even) %>% group_by(Identifier) %>% summarize(color_mean_turns_to_break_even = mean(mean_turns_to_break_even)) %>% arrange(color_mean_turns_to_break_even)
+color_tbe <- just_prop %>% select(space, title, Identifier, Sale_Cost, mean_turns_to_break_even) %>% group_by(Identifier) %>% summarize(color_mean_turns_to_break_even = mean(mean_turns_to_break_even)) %>% arrange(color_mean_turns_to_break_even)
+color_tbe
+```
+
+```{r}
+color_tbe$Identifier <- factor(color_tbe$Identifier,levels = c("Blue", "Brown", "Green", "Light Blue", "Orange", "Pink", "Red", "Yellow"))
+ggplot(data = color_tbe, aes(x = reorder(Identifier, color_mean_turns_to_break_even), y = color_mean_turns_to_break_even)) + geom_bar(stat = "Identity", aes(fill = Identifier))  + scale_fill_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Cost of Property vs Mean Turns to Break Even", x = "Set Color", y = "Mean Turns to Break Even for the Set")
 ```
 
