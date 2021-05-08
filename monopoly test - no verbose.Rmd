@@ -2,7 +2,8 @@
 title: "Monopoly Test"
 output: html_document
 ---
-
+#METHODS
+To begin the game of Monopoly, we must incorporate the rules of the game. Creating the board, dice, community chest cards, chance cards, and players were all needed. Vectors were used to create the board and both card sets. A function was created to incorporate the rules within the dice themselves, such as doubles and no doubles, resulting in another turn for the player or switching turns. For creating the players, the setRefClass function was needed for the creation of fields and methods that are associated with and referenced by the specific player. Multiple methods were nested within this function, including updating position of the players, jail functions, and rolling doubles functions. Functions for the chance deck and community chest were created to move and interact with the players when landed on. Lastly, there was a function needed to initiate and switch players' turns throughout the game.
 
 ---
 title: "STAT 345 Final Project - Real Estate"
