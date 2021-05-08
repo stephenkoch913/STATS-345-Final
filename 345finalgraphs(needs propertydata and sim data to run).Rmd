@@ -89,3 +89,7 @@ ggplot(data = just_prop, aes(x = Sale_Cost, y = mean_turns_to_break_even,  size 
 just_prop %>% select(space, title, Identifier, Sale_Cost, mean_turns_to_break_even) %>% arrange(mean_turns_to_break_even)
 ```
 
+```{r}
+just_prop %>% select(space, title, Identifier, Sale_Cost, mean_turns_to_break_even) %>% group_by(Identifier) %>% summarize(color_mean_turns_to_break_even = mean(mean_turns_to_break_even)) %>% arrange(color_mean_turns_to_break_even)
+```
+
