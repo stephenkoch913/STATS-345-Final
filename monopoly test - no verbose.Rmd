@@ -465,7 +465,7 @@ for(i in 1:1000){
 #adding the tally of how many times each property was landed on in the simulation to the dataframe monopoly board
 basic_turn_results <- cbind(monopoly_board, tally = space_tracking$tally)
 #adding the proportion of times each property was landed on in the simulation to the dataframe
-basic_turn_results <- cbind(basic_turn_results, rel = results$tally/sum(results$tally))
+basic_turn_results <- cbind(basic_turn_results, rel = basic_turn_results$tally/sum(basic_turn_results$tally))
 
 
 #presenting the results from most likely to be landed on to least likely
@@ -498,7 +498,7 @@ for(i in 1:1000){
 #adding the tally of how many times each property was landed on in the simulation to the dataframe monopoly board
 doubles_turn_results <- cbind(monopoly_board, tally = space_tracking$tally)
 #adding the proportion of times each property was landed on in the simulation to the dataframe
-doubles_turn_results <- cbind(doubles_turn_results, rel = results$tally/sum(results$tally))
+doubles_turn_results <- cbind(doubles_turn_results, rel = doubles_turn_results$tally/sum(doubles_turn_results$tally))
 
 
 #presenting the results from most likely to be landed on to least likely
