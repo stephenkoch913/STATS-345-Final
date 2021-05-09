@@ -52,8 +52,8 @@ community_cards <-  data.frame(index = 1:17, card = c("Advance to Go", "Bank err
 #Creating the Dice Rolls
 #dice has no arguements
 #dice outputs: faces - two random numbers between 1 and 6 (two ints)
-               doubles - if doubles were rolled (TRUE or FALSE)
-               movement - the total of the two randomly generated numbers between 1 and 6 (int)
+#              doubles - if doubles were rolled (TRUE or FALSE)
+#              movement - the total of the two randomly generated numbers between 1 and 6 (int)
 
 dice <- function(){
   faces <- sample(1:6,2, replace = TRUE)
@@ -69,14 +69,15 @@ dice <- function(){
 #Creating the Players
 #the setRefClass function allows for the creation of fields (similar to variables) and methods (similar to functions) that are associated with and referenced by the specific player
 # the fields (variables) created for the player inlcude: pos - used to track the position of the player
-                                                        jail - tracks if the player is in jail and if they are how many turns they have been in jail
-                                                        rolldouble - tracks how many doubles have been rolled in a row, if exceeds three, the player is sent to jail
+#                                                        jail - tracks if the player is in jail and if they are how many turns they have been in jail
+#                                                        rolldouble - tracks how many doubles have been rolled in a row, if exceeds three, the player is sent to jail
 # the methods (functions) created for each player include: move_n - used to add the new roll(s) of the player to the positon to find where the player currently is
-                                                           go_to_space_n - used to update the position of the player
-                                                           increase_jail - adds one to jail when the player is placed in jail or the player fails to roll doubles when in jail
-                                                           reset_jail - resets the variable jail when the player gets out of jail
-                                                           increase_double - adds one to the variable double when doubles are rolled
-                                                           reset_double - resets the amount of doubles rolled in a row to 0 when the player does not roll doubles
+#                                                          go_to_space_n - used to update the position of the player
+#                                                          increase_jail - adds one to jail when the player is placed in jail or the player fails to roll doubles when in jail
+#                                                          reset_jail - resets the variable jail when the player gets out of jail
+#                                                          increase_double - adds one to the variable double when doubles are rolled
+#                                                          reset_double - resets the amount of doubles rolled in a row to 0 when the player does not roll doubles
+
 player <- setRefClass("player", fields = list(
   #positon of player on the board
   pos="numeric", 
@@ -88,7 +89,7 @@ player <- setRefClass("player", fields = list(
   rolldouble = "numeric"
   ), 
 method = list(
-moves player by "n" positions and if pos is greater than 40, restarts player at beginning of game board
+#moves player by "n" positions and if pos is greater than 40, restarts player at beginning of game board
 move_n = function(n){
 #adds n which is found by roll of dice to position
 pos <<- pos + n
