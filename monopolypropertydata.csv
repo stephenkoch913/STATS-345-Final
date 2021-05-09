@@ -10,10 +10,10 @@ space,Name,Set_Num,Identifier,House_Cost,Sale_Cost,No_House,No_House_Doubled,One
 9,Vermont Avenue,2,Light Blue,50,100,6,12,30,90,270,400,550
 10,Connecticut Avenue,2,Light Blue,50,120,8,16,40,100,300,450,600
 11,Jail,,Jail,,,,,,,,,
-12,St. Charles Place,3,Pink,50,140,10,20,50,150,450,625,750
+12,St. Charles Place,3,Pink,100,140,10,20,50,150,450,625,750
 13,Electric Company ,9,Utility,,150,,,,,,,
-14,States Avenue,3,Pink,50,140,10,20,50,150,450,625,750
-15,Virginia Avenue,3,Pink,50,160,12,24,60,180,500,700,900
+14,States Avenue,3,Pink,100,140,10,20,50,150,450,625,750
+15,Virginia Avenue,3,Pink,100,160,12,24,60,180,500,700,900
 16,Pennsylvania Railroad,10,Railroad,,200,,,,,,,
 17,St. James Place,4,Orange,100,180,14,28,70,200,550,750,950
 18,Community Chest 2,,Chest,0,,,,,,,,
