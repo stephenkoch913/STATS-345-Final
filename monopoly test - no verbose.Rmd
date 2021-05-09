@@ -506,6 +506,8 @@ arrange(doubles_turn_results, desc(rel))
 
 ```{r}
 #Now running simulation with added jail, doubles and cards rules (taketurn)
+set.seed(12345)
+
 space_tracking <- tracking$new(tally = rep(0,40))
 
 
