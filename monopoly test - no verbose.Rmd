@@ -469,8 +469,14 @@ basic_turn_results <- cbind(basic_turn_results, rel = basic_turn_results$tally/s
 
 
 #presenting the results from most likely to be landed on to least likely
-arrange(basic_turn_results, desc(rel))
+head(arrange(basic_turn_results, desc(rel)))
 ```
+
+```{r}
+basic_turn_results$title <- factor(basic_turn_results$title,levels = monopoly_board$title )
+ggplot(data = basic_turn_results, aes(x = reorder(title, -tally), y = tally)) + geom_bar(stat = "Identity")  + scale_fill_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Space Tallies with Basic Movement", x = "Space", y = "Times Landed On") + theme(axis.text.x = element_text(angle = 90))
+```
+
 
 ```{r}
 #Now running simulation with added jail and doubles rules (doublesturn)
@@ -502,7 +508,12 @@ doubles_turn_results <- cbind(doubles_turn_results, rel = doubles_turn_results$t
 
 
 #presenting the results from most likely to be landed on to least likely
-arrange(doubles_turn_results, desc(rel))
+head(arrange(doubles_turn_results, desc(rel)))
+```
+
+```{r}
+doubles_turn_results$title <- factor(doubles_turn_results$title,levels = monopoly_board$title )
+ggplot(data = doubles_turn_results, aes(x = reorder(title, -tally), y = tally)) + geom_bar(stat = "Identity")  + scale_fill_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Space Tallies with Basic Movement + Doubles and Jail", x = "Space", y = "Times Landed On") + theme(axis.text.x = element_text(angle = 90))
 ```
 
 ```{r}
@@ -536,15 +547,25 @@ results <- cbind(results, rel = results$tally/sum(results$tally))
 
 
 #presenting the results from most likely to be landed on to least likely
-arrange(results, desc(rel))
+head(arrange(results, desc(rel)))
 ```
 
+```{r}
+results$title <- factor(results$title,levels = monopoly_board$title )
+ggplot(data = results, aes(x = reorder(title, -tally), y = tally)) + geom_bar(stat = "Identity")  + scale_fill_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Space Tallies with Basic Movement + Doubles and Jail + Cards", x = "Space", y = "Times Landed On") + theme(axis.text.x = element_text(angle = 90))
+```
+How did the Three Different simulations change the results? Well, with basic movement, all the spaces are visited in relatively even amounts. There will be some differences based on how there are two dice rolled at once, and the players all start at the same spot, but overall the numbers are close.
+
+When you add the rules for doubles and jail, then the number of times the Jail is visited increases a lot. Part of that is due to how every turn you end at the Jail, the tally is increased, so when you stay in jail rolling for doubles, you increase the count of the Jail Space. This also gives extra space tallies to properties around the jail area because you get moved over there often by cards and rolling doubles. 
+
+Finally, when you add the rules for Drawing Cards, you still see the large number of Jail Tallies, but now you also see large numbers for places you can get moved to by drawing a chance or community chest card. Places like Illinois Avenue, Reading Railroad and GO have larger numbers than others because of this. 
 
 
 Now we start to analyze the data from the simulation that implemented doubles, jail and cards
 
 
 This first code chunk sets up the factors needed for analysis. The expected_payment vectors are the probability that the space was landed on multiplied by the rent charged. This gives an expected income for each property each turn based on long run numbers. The cost_total vectors add the cost of the property to the cost of added houses and hotels. Finally, the expected_turns_to_repay vectors give the expected number of turns it would take to repay the investment (cost of property and buildings) 
+
 ```{r, message=FALSE}
 prop_data <- tibble(read.csv("monopolypropertydata.csv"))
 
@@ -559,33 +580,28 @@ just_prop <- just_prop %>% mutate(hotel_cost_total = 5* House_Cost + Sale_Cost, 
 just_prop <- just_prop %>% mutate(expected_turns_to_repay_hotel = hotel_cost_total/expected_payment_hotel, expected_turns_to_repay_four_houses = four_houses_cost_total/expected_payment_four_houses, expected_turns_to_repay_three_houses = three_houses_cost_total/ expected_payment_three_houses, expected_turns_to_repay_two_houses = two_houses_cost_total/expected_payment_two_houses, expected_turns_to_repay_one_house = one_house_cost_total/expected_payment_one_house, expected_turns_to_repay_base = Sale_Cost/expected_payment_base)
 ```
 
+Now the first graph I will start out with the the cost of property vs the expected payment per turn with no houses. In this case, the numbers are doubled because it is assumed that you own the whole color set for each because we will be comparing this to property with investments. In this first graph You can see some winners and some losers in base form. Boardwalk is an obvious outlier based on the very high rent, but the cost really makes park place suffer because of how it does not share the same high rent.The first three sets are pretty average and follow the fit line, but the red and orange sets are slightly above and the Yellow and Green are slightly below. 
 
 ```{r, message=FALSE}
 ggplot(data = just_prop, aes(x = Sale_Cost, y = expected_payment_base, size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black")+ scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Cost of Property vs Expected Payment per turn No Houses", x = "Cost of Property", y = "Expected Payment per turn")
 ```
+Now lets look at the final potential for these properties. We can see how the first set falls off in expected payment and now the light blue set is below the fit line. Once you get into the middle of the board, the Pink, Orange and Red sets are above the line. Not much has changed for the Yellow and Green sets though, as they are slightly lower in expected payment. The final Blue set still has the large difference between the 350 dollar Park Place and 400 Dollar Boardwalk. 
 
+```{r, message=FALSE}
+ggplot(data = just_prop, aes(x = Sale_Cost, y = expected_payment_hotel, size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black")+ scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Cost of Property vs Expected Payment per turn With Hotels", x = "Cost of Property", y = "Expected Payment per turn")
+```
 
-
+This next Graph adds in the cost of houses, which increase by 50 dollars each as you travel along the sides of the square board. The first two sets have 50 dollar houses while the last two have 200 dollar houses. You can see this as the sets are grouped by two because of the house costs. You can see how this really looks good for the orange set, the second set for 100 dollar houses sets, but the sheer amount of times Illinois avenue is landed on really helps its numbers. Another interesting sight is the Green set. It suffers from the 200 dollar houses and weak rent.
 
 ```{r, message=FALSE}
 ggplot(data = just_prop, aes(x = hotel_cost_total, y = expected_payment_hotel,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() +labs(title = "Total Cost of Hotel and Property vs Expected Payment per Turn with Hotels", x = "Total Cost of Hotel and Property", y = "Expected Payment per Turn with Hotels")
 
 ```
 
-```{r, message=FALSE}
-ggplot(data = just_prop, aes(x = hotel_cost_total, y = expected_turns_to_repay_hotel,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Total Cost vs Expected Turns to Break Even With Hotels", x = "Total Cost of Property and Hotel", y = "Expected Turns to Break Even With Hotels")
-```
+To get a better look at things, we will start to look at expected turns to break even (make back all the money you spend on the property). Notice the Outliers at the ends: Boardwalk, Park Place and especially Mediterranean Avenue. The following six graphs will go through the expected turns to break even through all stages of development
 
 ```{r, message=FALSE}
-ggplot(data = just_prop, aes(x = four_houses_cost_total, y = expected_turns_to_repay_four_houses,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Total Cost vs Expected Turns to Break Even With Four Houses", x = "Total Cost of Property and Four Houses", y = "Expected Turns to Break Even With Four Houses")
-```
-
-```{r, message=FALSE}
-ggplot(data = just_prop, aes(x = three_houses_cost_total, y = expected_turns_to_repay_three_houses,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Total Cost vs Expected Turns to Break Even With Three Houses", x = "Total Cost of Property and Three Houses", y = "Expected Turns to Break Even With Three Houses")
-```
-
-```{r, message=FALSE}
-ggplot(data = just_prop, aes(x = two_houses_cost_total, y = expected_turns_to_repay_two_houses,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Total Cost vs Expected Turns to Break Even With Two Houses", x = "Total Cost of Property and Two Houses", y = "Expected Turns to Break Even With Two Houses")
+ggplot(data = just_prop, aes(x = Sale_Cost, y = expected_turns_to_repay_base,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Cost of Property vs Expected Turns to Break Even With No Houses", x = "Cost of Property", y = "Expected Turns to Break Even With No Houses")
 ```
 
 ```{r, message=FALSE}
@@ -593,8 +609,28 @@ ggplot(data = just_prop, aes(x = one_house_cost_total, y = expected_turns_to_rep
 ```
 
 ```{r, message=FALSE}
-ggplot(data = just_prop, aes(x = Sale_Cost, y = expected_turns_to_repay_base,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Cost of Property vs Expected Turns to Break Even With No Houses", x = "Cost of Property", y = "Expected Turns to Break Even With No Houses")
+ggplot(data = just_prop, aes(x = two_houses_cost_total, y = expected_turns_to_repay_two_houses,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Total Cost vs Expected Turns to Break Even With Two Houses", x = "Total Cost of Property and Two Houses", y = "Expected Turns to Break Even With Two Houses")
 ```
+
+```{r, message=FALSE}
+ggplot(data = just_prop, aes(x = three_houses_cost_total, y = expected_turns_to_repay_three_houses,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Total Cost vs Expected Turns to Break Even With Three Houses", x = "Total Cost of Property and Three Houses", y = "Expected Turns to Break Even With Three Houses")
+```
+
+```{r, message=FALSE}
+ggplot(data = just_prop, aes(x = four_houses_cost_total, y = expected_turns_to_repay_four_houses,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Total Cost vs Expected Turns to Break Even With Four Houses", x = "Total Cost of Property and Four Houses", y = "Expected Turns to Break Even With Four Houses")
+```
+
+```{r, message=FALSE}
+ggplot(data = just_prop, aes(x = hotel_cost_total, y = expected_turns_to_repay_hotel,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Total Cost vs Expected Turns to Break Even With Hotels (Five Houses)", x = "Total Cost of Property and Hotel", y = "Expected Turns to Break Even With Hotels")
+```
+There are a couple of trends I would like to point out. The first major point is Mediterranean Avenue. Why is it so different from the fit line? There are two reasons for this. First, its location right next to start does it no favors because at the start of the game and if you ever land on or get sent to start, it is impossible to move one space with two dice, so it gets landed on very infrequently. Second, it has the same cost as the other property in the brown set, but has rent values that are almost half! The hotel rent for Mediterranean Avenue is 250 dollars compared to the rent cost of 450 for Baltic (the other property in the brown set). 
+
+The second interesting trend I would like to look at is the Expected turns to break even as you increase investment. Rent values are so low in the beginning that a property with investment will have a quicker time to break even. This is the game telling you to invest in property in order to bankrupt your opponents. 
+
+The third trend I would like to address is the slope of the fit line. It increases as you add development. This means that with no houses, the more expensive properties have smaller expected number of turns to break even than less expensive properties. However, when you start increasing development, the advantage sways towards the less expensive properties, as now they take less turns to break even. 
+
+
+The next graph is an average of the expected turns to break even across the different levels of development. This gives a general idea of how quickly the properties repay their investments over the investment process. This graph shows how sets 2 through 5 are some of the best options compared to the rest of the sets. You can also see how the first set has really poor value because of Mediterranean Avenue and how there is a plateau in break even turns around 100 with the last few sets if you don't count Boardwalk.
 
 ```{r, message=FALSE}
 just_prop <- just_prop %>% mutate(mean_turns_to_break_even = (expected_turns_to_repay_base + expected_turns_to_repay_one_house + expected_turns_to_repay_two_houses + expected_turns_to_repay_three_houses + expected_turns_to_repay_four_houses + expected_turns_to_repay_hotel) / 6 )
@@ -602,8 +638,10 @@ just_prop <- just_prop %>% mutate(mean_turns_to_break_even = (expected_turns_to_
 ggplot(data = just_prop, aes(x = Sale_Cost, y = mean_turns_to_break_even,  size = 2)) + geom_point(aes(color = Identifier)) + geom_smooth(method = lm, se = FALSE, size =1, color = "black") + scale_color_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Cost of Property vs Mean Turns to Break Even", x = "Cost of Property", y = "Mean Turns to Break Even")
 ```
 
+This vector shows the top 6 properties in terms of a fast return on investment.The one thing you may notice three of them are the Orange set, and they are right after Boardwalk, which has a massive Hotel rent and Illinois Ave, which is the most landed on property. 
+
 ```{r}
-just_prop %>% select(space, title, Identifier, Sale_Cost, mean_turns_to_break_even) %>% arrange(mean_turns_to_break_even)
+head(just_prop %>% select(space, title, Identifier, Sale_Cost, mean_turns_to_break_even) %>% arrange(mean_turns_to_break_even))
 ```
 
 ```{r}
@@ -615,4 +653,7 @@ color_tbe
 color_tbe$Identifier <- factor(color_tbe$Identifier,levels = c("Blue", "Brown", "Green", "Light Blue", "Orange", "Pink", "Red", "Yellow"))
 ggplot(data = color_tbe, aes(x = reorder(Identifier, color_mean_turns_to_break_even), y = color_mean_turns_to_break_even)) + geom_bar(stat = "Identity", aes(fill = Identifier))  + scale_fill_manual(values = c("blue","brown", "green3", "light blue", "orange", "purple", "red","yellow3")) + theme_bw() + labs(title = "Cost of Property vs Mean Turns to Break Even", x = "Set Color", y = "Mean Turns to Break Even for the Set")
 ```
+Here the mean turns to break even averaged through the set. This shows the best overall sets for quick break even point and the arithmetic average gives strong weight to the larger hotel rent numbers, so you will also have high rents to really hit your opponents with a high bill in the late game. As you can see, orange, blue and red are the strongest sets from our simulation. Pink and Yellow are not much farther behind, but Green, is starting to take quite a while to make back your investment, and Light Blue and Brown may only be good in the short term if a bunch of people get unlucky and land on them while you have invested in them. 
+
+Conclusion:
 
